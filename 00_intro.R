@@ -50,4 +50,24 @@ mean(controls)
 
 ##### dlpyr Exercises #####
 
+url="https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv"
+filename <- paste0('datos/',basename(url))
+download.file(url,filename)
+data_wp01 <- read.csv(filename)
+class(data_wp01)
 
+primates <- data_wp01 %>% 
+  filter(order == 'Primates')
+nrow(primates)
+
+class(primates)
+
+
+primates <-  primates %>% select(sleep_total) 
+class(primates)
+
+mean(primates %>% unlist())
+
+data_wp01 %>% 
+  filter(order == 'Primates') %>% 
+  summarise(mean(sleep_total))
