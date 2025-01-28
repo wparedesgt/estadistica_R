@@ -88,4 +88,48 @@ median(exec.pay)
 ### Ejercicio Boxplots ###
 
 data("InsectSprays")
+head(InsectSprays)
 
+
+boxplot(split(InsectSprays$count, InsectSprays$spray))
+boxplot(InsectSprays$count~InsectSprays$spray)
+
+boxplot(count ~ spray, data = InsectSprays,
+        xlab = "Type of spray", ylab = "Insect count",
+        main = "InsectSprays data", varwidth = TRUE, col = "lightgray")
+
+data("nym.2002")
+head(nym.2002)
+
+boxplot(time~gender, data = nym.2002)
+
+hist_male <- nym.2002 %>% filter(gender == 'Male') 
+hist_female <- nym.2002 %>% filter(gender == 'Female')
+
+hist(hist_male$time)
+hist(hist_female$time)
+
+
+mypar(1,3)
+
+males <- nym.2002 %>%
+  filter(gender == "Male") %>%
+  pull(time)
+
+females <- nym.2002 %>% 
+  filter(gender=="Female") %>% 
+  pull(time)
+
+boxplot(females, males)
+hist(females,xlim=c(range( nym.2002$time)))
+hist(males,xlim=c(range( nym.2002$time)))
+
+############ QUIZ ##########################
+
+library(tidyverse)
+library(dslabs)
+data("heights")
+h <- heights$height
+
+hist(h)
+boxplot(h)
