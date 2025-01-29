@@ -264,7 +264,7 @@ library(tidyverse)
 library(dslabs)
 library(rafalib)
 library(downloader) 
-library(downloader) 
+
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- basename(url)
 download(url, destfile=filename)
@@ -356,3 +356,156 @@ qqline(avgs)
 
 mean(avgs)
 popsd(avgs)
+
+
+############# Ejercicio 3 /13 ##############
+# Central Limit Theorem and T distribution
+
+library(tidyverse)
+library(dslabs)
+library(rafalib)
+library(downloader) 
+
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- paste0("datos/","femaleMiceWeights.csv")  
+if(!file.exists(filename)) download(url,destfile=filename)
+dat <- read.csv(filename)
+
+#### Probabilidad en juego de datos
+
+##Ejemplo
+n <- 100
+x <- sample(1:6, n, replace = TRUE)
+mean(x == 6)
+
+#### Ejercicio ###
+
+set.seed(1)  # Set Seeed
+
+n <- 30  # Numero de tiros del dato
+trials <- 10000  # Numero de pruebas
+p <- 0.5  # Probabilidad de que salga un 6
+
+# Simular el lanzamiento de n dados para cada prueba y calcular proporciones de veces que salga un 6
+proportions <- replicate(trials, mean(sample(1:6, n, replace = TRUE) == 6))
+
+# Calcular scord de z
+z <- (proportions - p) / sqrt(p * (1 - p) / n)
+
+# Calcular cuando z es mayor que 2
+prop_outside <- mean(abs(z) > 2)
+
+prop_outside ### Ver el resultado
+
+qqnorm(proportions)
+qqline(proportions)
+
+hist(proportions)
+
+## Respuesta
+
+ps <- c(0.5, 0.5, 0.01, 0.01)
+ns <- c(5, 30, 30, 100)
+library(rafalib)
+mypar(4, 2)
+
+for(i in 1:4) {
+  p <- ps[i]
+  sides <- 1/p
+  n <- ns[i]
+  zs <- replicate(10000, {
+    x <- sample(1:sides, n, replace=TRUE)
+    (mean(x==1) - p) / sqrt(p*(1-p)/n)
+  })
+  hist(zs, nclass=7)
+  qqnorm(zs)
+  abline(0,1)
+}
+
+#### Q3 
+library(tidyverse)
+
+X <- filter(dat, Diet=="chow") %>% 
+  select(Bodyweight) %>% 
+  unlist()
+Y <- filter(dat, Diet=="hf") %>% 
+  select(Bodyweight) %>% 
+  unlist()
+
+mypar()
+
+mean(X)
+
+## Q5
+0
+
+## Q6
+sd(X)
+
+
+## Q7
+
+# Given or calculated values
+sigma_X <- sd(X)  # Sample standard deviation
+n <- length(X)    # Sample size
+
+# Standard error of the mean
+SE <- sigma_X / sqrt(n)
+
+# Z-score for 2 grams
+z <- 2 / SE
+
+# Probability using the standard normal distribution
+probability <- 2 * (1 - pnorm(z))
+probability
+
+## Q8
+
+# Calculate sample standard deviations
+sigma_X <- sd(X)
+sigma_Y <- sd(Y)
+
+# Calculate the standard error
+SE_diff <- sqrt((sigma_Y^2 / 12) + (sigma_X^2 / 12))
+SE_diff
+
+### Q9 
+
+t_stat <- (mean(Y)-mean(X)) / SE_diff
+t_stat
+
+
+#### Q10
+
+#Distribucion Normal con promedio 0 y desviacion estandar de 1
+
+## Q11
+
+
+# Example values (replace with actual t-statistic and df)
+t <- t_stat  # Replace with the t-statistic from Exercise 9
+df <- 22  # Degrees of freedom, if applicable
+
+# For normal distribution
+p_value_normal <- 2 * (1 - pnorm(abs(t)))
+
+# For t-distribution
+p_value_t <- 2 * (1 - pt(abs(t), df))
+
+p_value_normal  # Use if normal
+p_value_t       # Use if t-distributed
+
+
+### Q 12
+
+# Assuming X and Y are your two groups:
+result <- t.test(X, Y, var.equal = TRUE)  # Use var.equal=TRUE if variances are assumed equal
+p_value <- result$p.value  # Extract the p-value
+p_value
+
+
+
+# Assuming X and Y are your two numeric vectors:
+result <- t.test(X, Y)  # Perform the t-test
+p_value <- result$p.value  # Extract the p-value
+p_value
