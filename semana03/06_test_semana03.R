@@ -49,10 +49,7 @@ tval
 pval <- 1-(pnorm(abs(tval))-pnorm(-abs(tval)))
 pval
 
-
-
 ### Ejercicios de intervalos de confidencia
-
 
 library(tidyverse)
 library(dslabs)
@@ -94,33 +91,54 @@ tval <- obs /se
 tval
 
 
-# Set the seed
+# Set the seed for reproducibility
 set.seed(1)
 
-# Sample size
+# Take samples of size N=25 from each group
 N <- 25
+dat.ns <- sample(btw.nonsmoke, N)
+dat.s <- sample(btw.smoke, N)
 
-# Obtain samples
-dat.ns <- sample(btw.nonsmoke, N, replace = FALSE)
-dat.s <- sample(btw.smoke, N, replace = FALSE)
+# Calculate sample means
+mean_diff <- mean(dat.ns) - mean(dat.s)
 
-# Sample statistics
-mean.diff <- mean(dat.ns) - mean(dat.s)
-s.ns <- sd(dat.ns)
-s.s <- sd(dat.s)
+# Calculate pooled standard error
+# First, calculate pooled standard deviation
+s_pooled <- sqrt(((N-1)*var(dat.ns) + (N-1)*var(dat.s))/(2*N-2))
 
-# Pooled standard deviation
-S_p <- sqrt(((N - 1) * s.ns^2 + (N - 1) * s.s^2) / (2 * N - 2))
+# Calculate standard error
+SE <- s_pooled * sqrt(1/N + 1/N)
 
-# Standard error
-SE <- S_p * sqrt(2 / N)
+# For 99% confidence interval with 2N-2 degrees of freedom:
+df <- 2*N - 2  # = 48 degrees of freedom
+t_critical <- qt(0.995, df)  # Using 0.995 for 99% CI (0.99 + (1-0.99)/2)
 
-# Critical t-value for 99% confidence and 2N-2 degrees of freedom
-t_star <- qt(0.995, df = 2 * N - 2)
 
-# Margin of error
-margin_error <- t_star * SE
 
-# Add and subtract margin of error for confidence interval
-c(mean.diff - margin_error, mean.diff + margin_error)
+#### REspuesta
 
+N <- 25
+set.seed(1)
+dat.ns <- sample(btw.nonsmoke, N) 
+dat.s <- sample(btw.smoke, N) 
+qt(0.995,48)*sqrt( sd( dat.ns)^2/N + sd( dat.s)^2/N )
+##note that if you define dat.s before dat.ns, you get a different answer
+##due to sampling randomness
+##tolerance is set to accept both answers
+
+
+# Set seed
+set.seed(1)
+N <- 5
+
+# Take random samples
+dat.ns <- sample(btw.nonsmoke, N)
+dat.s <- sample(btw.smoke, N)
+
+# Perform t-test
+t.test(dat.ns, dat.s)$p.value
+
+
+# Or more explicitly:
+result <- t.test(dat.ns, dat.s)
+result$p.value
