@@ -5,10 +5,8 @@ library(dslabs)
 library(rafalib)
 library(downloader)
 
-
 RNGkind(kind = "Mersenne-Twister", normal.kind = "Inversion", sample.kind = "Rounding")
 set.seed(1)
-
 
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- "datos/mice_pheno.csv"
