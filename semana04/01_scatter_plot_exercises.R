@@ -52,3 +52,10 @@ print(resultados)
 print(paste("Estadísticas para grupo 20-25:"))
 print(grupos_tiempo[["20-25"]])
 
+
+#### Log Ratios Exercises ###
+
+time <- sort(nym.2002$time)
+
+min(time)/median(time)
+max(time)/median(time)
